@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe} from '@nestjs/common';
 import { UserManagementService } from '../user-management.service';
 import { CreateUserManagementDto } from '../dto/create-user-management.dto';
 import { UpdateUserManagementDto } from '../dto/update-user-management.dto';
@@ -18,7 +18,7 @@ export class UserManagementController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseIntPipe) id: number, ) {
     return this.userManagementService.findOne(+id);
   }
 
