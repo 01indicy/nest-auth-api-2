@@ -28,11 +28,22 @@ export class UserManagementService {
     return user_details;
   }
 
-  update(id: number, updateUserManagementDto: UpdateUserManagementDto) {
-    return `This action updates a #${id} userManagement`;
+  async update(id: number, updateUserManagementDto: UpdateUserManagementDto) {
+    const user_details = await this.prisma.user.findUnique({where: { id }});
+    if(user_details){
+      return this.prisma.user.update({
+        where: { id: id},
+        data: updateUserManagementDto
+      })
+    } else {
+      if(!user_details) throw new HttpException(`User with id ${id} no found`,HttpStatus.NOT_FOUND)
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} userManagement`;
+  async remove(id: number) {
+    const user_details = await this.prisma.user.findUnique({where: {id}});
+    if(!user_details) throw new HttpException(`User with id ${id} no found`,HttpStatus.NOT_FOUND)
+
+    return this.prisma.user.delete({where: {id:id}})
   }
 }
