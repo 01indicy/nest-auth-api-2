@@ -32,11 +32,11 @@ export class UserManagementService {
     const user_details = await this.prisma.user.findUnique({where: { id }});
     if(user_details){
       return this.prisma.user.update({
-        where: { id: id},
+        where: { id: id },
         data: updateUserManagementDto
       })
     } else {
-      if(!user_details) throw new HttpException(`User with id ${id} no found`,HttpStatus.NOT_FOUND)
+      throw new HttpException(`User with id ${id} no found`,HttpStatus.NOT_FOUND)
     }
   }
 
@@ -45,5 +45,14 @@ export class UserManagementService {
     if(!user_details) throw new HttpException(`User with id ${id} no found`,HttpStatus.NOT_FOUND)
 
     return this.prisma.user.delete({where: {id:id}})
+  }
+
+  signIn(data: {email: string, password: string}){
+    console.log(data);
+    return `sign in route`;
+  }
+
+  signOut(token: string){
+    return `sign out route`;
   }
 }
