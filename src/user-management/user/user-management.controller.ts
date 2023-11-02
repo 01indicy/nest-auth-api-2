@@ -1,10 +1,23 @@
-import {Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, UseInterceptors} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  ParseIntPipe,
+  UseInterceptors,
+  UseGuards
+} from '@nestjs/common';
 import { UserManagementService } from '../user-management.service';
 import { CreateUserManagementDto } from '../dto/create-user-management.dto';
 import { UpdateUserManagementDto } from '../dto/update-user-management.dto';
 import {SerializeInterceptor} from "../../serialize-interceptor/serialize-interceptor.service";
 import {UsersDto} from "../dto/users.dto";
+import {AuthGuardGuard} from "../../guard/auth-guard.guard";
 
+@UseGuards(AuthGuardGuard)
 @Controller('user')
 export class UserManagementController {
   constructor(private readonly userManagementService: UserManagementService) {}

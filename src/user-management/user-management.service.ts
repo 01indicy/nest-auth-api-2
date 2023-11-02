@@ -8,7 +8,7 @@ import * as bcrypt from 'bcrypt';
 @Injectable()
 export class UserManagementService {
   private saltRound = 10;
-  constructor(private prisma: PrismaService, private jwt: JwtService) {}
+  constructor(private prisma: PrismaService, private jwtService: JwtService) {}
   async create(createUserManagementDto: CreateUserManagementDto) {
     const is_email_inuse = await this.prisma.user.findFirst({where: {email: createUserManagementDto.email}});
     if(is_email_inuse) throw new HttpException(`Email provided (${createUserManagementDto.email}) is already in use, Please try another one.`,HttpStatus.BAD_REQUEST)
@@ -47,9 +47,21 @@ export class UserManagementService {
     return this.prisma.user.delete({where: {id:id}})
   }
 
-  signIn(data: {email: string, password: string}){
-    console.log(data);
-    return `sign in route`;
+  async signIn(credential: {email: string, password: string}){
+    const get_credentials = await this.prisma.user.findFirst({where: {email: credential.email}})
+    if(get_credentials){
+      const is_match = await bcrypt.compare(credential.password,get_credentials.password);
+      if(is_match){
+        const payload = { sub: get_credentials.id, username: get_credentials.email}
+        return {
+          access_token: await this.jwtService.signAsync(payload)
+        };
+      }else{
+        throw new HttpException('User not found, Please enter correct credentials 1',HttpStatus.BAD_REQUEST)
+      }
+    }else{
+      throw new HttpException('User not found, Please enter correct credentials',HttpStatus.BAD_REQUEST)
+    }
   }
 
   signOut(token: string){
